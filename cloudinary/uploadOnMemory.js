@@ -1,7 +1,6 @@
-const multer = require("multer");
-const path = require("path");
+var multer = require("multer");
+// const path = require("path");
 
-// Mendefinisikan gimana cara nyimpen file-nya
 const storage = multer.memoryStorage();
 
 // Membuat upload middleware

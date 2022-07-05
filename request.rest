@@ -22,5 +22,8 @@ Content-Type: application/json
 }
 
 ###
+GET http://localhost:8000/api/user/token
+
+###
 GET http://localhost:8000/api/user
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJ0ZXN0aW5nIiwiZW1haWwiOiJ0ZXN0aW5nQGdtYWlsLmNvbSIsImlhdCI6MTY1Njg3NDkxMiwiZXhwIjoxNjU2ODc4NTEyfQ.CnNX-5Ihodesjl-jaMDF-XFV9mqyVq_5BuCggCJ1lF0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibmFtZSI6InRlc3RpbmcxIiwiZW1haWwiOiJ0ZXN0aW5nMUBnbWFpbC5jb20iLCJpYXQiOjE2NTY5NDI0OTAsImV4cCI6MTY1Njk0NjA5MH0.RYNhOTQz6ttmf35I6nDOWeeqWWGUF4pZKgdrZ1Kn2mM

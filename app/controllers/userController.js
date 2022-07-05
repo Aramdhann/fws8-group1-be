@@ -48,11 +48,15 @@ module.exports = {
             const id = user[0].id;
             const username = user[0].username;
             const email = user[0].email;
+            const address = user[0].address;
+            const phone = user[0].phone;
+            const city = user[0].city;
+            const image = user[0].image;
             
-            const accessToken = jwt.sign({id, username, email, image, address, phone, city}, process.env.ACCESS_TOKEN_SECRET, {
+            const accessToken = jwt.sign({id, username, email, address, phone, city, image}, process.env.ACCESS_TOKEN_SECRET, {
                 expiresIn: '1h'
             });
-            const refreshToken = jwt.sign({id, username, email, image, address, phone, city}, process.env.REFRESH_TOKEN_SECRET, {
+            const refreshToken = jwt.sign({id, username, email}, process.env.REFRESH_TOKEN_SECRET, {
                 expiresIn: '1d'
             });
             await User.update({refresh_token: refreshToken},{
@@ -129,57 +133,65 @@ module.exports = {
     async updateUser(req, res) {
         try{
             const id = req.id;
-            const initial = await User.findAll({ where: { id } });
+            const initial = await User.findByPk(id);
 
             if (req.file) {
                 uploadOnMemory.single("picture")(req, res, async function () {
-                const fileBase64 = req.file.buffer.toString("base64");
-                const file = `data:${req.file.mimetype};base64,${fileBase64}`;
-                const url = `/uploads/$`;
+                    
+                    const fileBase64 = req.file.buffer.toString("base64");
+                    const file = `data:${req.file.mimetype};base64,${fileBase64}`;
+                    //const url = `/uploads/${req.file.filename}`
 
-                cloudinary.uploader.upload(file, async function (err, result) {
-                    if (err) {
-                    console.log(err);
-                    return res.status(400).json({
-                        message: "gagal upload file",
-                    });
-                    }
-                    const user = User.update(
-                    {
-                        username: req.body.username
-                        ? req.body.username
-                        : initial.username,
-                        image: result.url ? result.url : initial.image,
-                        address: req.body.address ? req.body.address : initial.address,
-                        phone: req.body.nomorhp
-                        ? req.body.nomorhp
-                        : initial.phoneNumber,
-                        city: req.body.city ? req.body.city : initial.city
-                    },
-                    { where: { id } }
-                    );
+                    cloudinary.uploader.upload(file, async function (err, result) {
+                        const data = {
+                            username: req.body.username ? req.body.username : initial.username,
+                            address: req.body.address ? req.body.address : initial.address,
+                            phone: req.body.phone
+                            ? req.body.phone
+                            : initial.phone,
+                            city: req.body.city ? req.body.city : initial.city,
+                            image: result.url ? result.url : initial.image      
+                        }
+                        if (err) {
+                            console.log(err);
+                            return res.status(400).json({
+                                message: "gagal upload file",
+                            });
+                        }
+                        
+                        const user = await User.update(
+                        data,
+                        { where: { id } }
+                        );
 
-                    res.status(201).json({
-                    status: "OK",
-                    data: user,
-                    message: "User succesfully updated",
+                        res.status(201).json({
+                        status: "OK",
+                        data: user,
+                        msg: "User succesfully updated",
+                        });
                     });
-                });
                 });
             } else if (!req.file) {
-                const user = User.update(
-                {
+                const data = {
                     username: req.body.username ? req.body.username : initial.username,
                     address: req.body.address ? req.body.address : initial.address,
-                    phoneNumber: req.body.nomorhp
-                    ? req.body.nomorhp
-                    : initial.phoneNumber,
-                    image: "",
-                    city: req.body.city ? req.body.city : initial.city
-                },
+                    phone: req.body.phone
+                    ? req.body.phone
+                    : initial.phone,
+                    city: req.body.city ? req.body.city : initial.city,
+                    image: ""
+                }
+                
+                console.log(req.body.username);
+
+                console.log("data sample", data)
+                const user = await User.update(
+                data,
                 { where: { id } }
                 );
-
+                console.log(id)
+                console.log(user);
+                
                 res.status(201).json({
                 status: "OK",
                 data: user,
