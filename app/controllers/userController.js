@@ -2,7 +2,8 @@ const { Op } = require ("sequelize");
 const { User } = require ("../models");
 const jwt = require ("jsonwebtoken");
 const bcrypt = require ("bcrypt");
-const { uploadOnMemory, cloudinary } = require("../../cloudinary");
+const cloudinary = require("../../cloudinary/cloudinary");
+const upload = require("../../cloudinary/multer");
 
 module.exports = {
     async Register(req, res) {
@@ -131,79 +132,30 @@ module.exports = {
     },
 
     async updateUser(req, res) {
-        try{
-            const id = req.id;
-            const initial = await User.findByPk(id);
-
-            if (req.file) {
-                uploadOnMemory.single("picture")(req, res, async function () {
-                    
-                    const fileBase64 = req.file.buffer.toString("base64");
-                    const file = `data:${req.file.mimetype};base64,${fileBase64}`;
-                    //const url = `/uploads/${req.file.filename}`
-
-                    cloudinary.uploader.upload(file, async function (err, result) {
-                        const data = {
-                            username: req.body.username ? req.body.username : initial.username,
-                            address: req.body.address ? req.body.address : initial.address,
-                            phone: req.body.phone
-                            ? req.body.phone
-                            : initial.phone,
-                            city: req.body.city ? req.body.city : initial.city,
-                            image: result.url ? result.url : initial.image      
-                        }
-                        if (err) {
-                            console.log(err);
-                            return res.status(400).json({
-                                message: "gagal upload file",
-                            });
-                        }
-                        
-                        const user = await User.update(
-                        data,
-                        { where: { id } }
-                        );
-
-                        res.status(201).json({
-                        status: "OK",
-                        data: user,
-                        msg: "User succesfully updated",
-                        });
-                    });
-                });
-            } else if (!req.file) {
-                const data = {
-                    username: req.body.username ? req.body.username : initial.username,
-                    address: req.body.address ? req.body.address : initial.address,
-                    phone: req.body.phone
-                    ? req.body.phone
-                    : initial.phone,
-                    city: req.body.city ? req.body.city : initial.city,
-                    image: ""
-                }
-                
-                console.log(req.body.username);
-
-                console.log("data sample", data)
-                const user = await User.update(
-                data,
-                { where: { id } }
-                );
-                console.log(id)
-                console.log(user);
-                
-                res.status(201).json({
-                status: "OK",
-                data: user,
-                message: "User succesfully updated",
-                });
+        const id = req.id;
+        try {
+            
+            const result = await cloudinary.uploader.upload(req.file.path);
+            const data = {
+                username: req.body.username,
+                phone: req.body.phone,
+                address: req.body.address,
+                city: req.body.city,
+                image: result.url ? result.url : initial.image
             }
-        }catch(error){
-            res.status(422).json({
-                status: "Failed",
-                msg: error.message
-            })
-            console.log(error);
+
+            const userData = await User.update(data,{where: {id: id}});
+            res.status(200).json({
+                status:"Success",
+                msg: "Update profile success",
+                data: data
+            });
+        } catch(err) {
+            res.status(200).json({
+                status:"Failure",
+                msg: "Update data has been failure",
+            });
+            console.log(err);
         }
     }
 }
