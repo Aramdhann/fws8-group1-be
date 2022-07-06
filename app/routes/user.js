@@ -29,8 +29,8 @@ function apply(app) {
     app.put("/api/user/data", verifyToken, upload.single("image"), updateUser);
 
     // Product
-    app.post("/api/product/create", verifyToken, createProduct);
-    app.put("/api/product/:id", verifyToken, updateProduct);
+    app.post("/api/product/create", verifyToken, upload.single("image"), createProduct);
+    app.put("/api/product/:id", verifyToken, upload.single("image"), updateProduct);
     app.delete("/api/product/:id", verifyToken, deleteProduct);
     app.get("/api/product/findall", getAllProduct);
     app.get("/api/product/findcategory", getProductCategory);
