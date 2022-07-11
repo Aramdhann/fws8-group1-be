@@ -1,5 +1,5 @@
 const { Op } = require ("sequelize");
-const { User } = require ("../models");
+const { users } = require ("../models");
 const jwt = require ("jsonwebtoken");
 const bcrypt = require ("bcrypt");
 const cloudinary = require("../../cloudinary/cloudinary");
@@ -20,7 +20,7 @@ module.exports = {
         const hashPassword = await bcrypt.hash(password, salt);
 
         try {
-            await User.create({
+            await users.create({
                 username: username,
                 email: email,
                 password: hashPassword
@@ -36,7 +36,7 @@ module.exports = {
 
     async Login(req, res) {
         try {
-            const user = await User.findAll({
+            const user = await users.findAll({
                 where: {
                     email: req.body.email
                 }
@@ -60,7 +60,7 @@ module.exports = {
             const refreshToken = jwt.sign({id, username, email}, process.env.REFRESH_TOKEN_SECRET, {
                 expiresIn: '1d'
             });
-            await User.update({refresh_token: refreshToken},{
+            await users.update({refresh_token: refreshToken},{
                 where:{
                     id: id
                 }
@@ -87,7 +87,7 @@ module.exports = {
 
         if(!refreshToken) return res.sendStatus(204);
 
-        const user = await User.findAll({
+        const user = await users.findAll({
             where: {
                 refresh_token: refreshToken
             }
@@ -97,7 +97,7 @@ module.exports = {
 
         const id = user[0].id;
         
-        await User.update({refresh_token: null}, {
+        await users.update({refresh_token: null}, {
             where: {
                 id: id
             }
@@ -111,7 +111,7 @@ module.exports = {
             const id = req.id;
             console.log("Req :", req.id);
     
-            const user = await User.findOne({
+            const user = await users.findOne({
                 where: { id: id },
                 attributes: ['image', 'username', 'email', 'phone', 'address']
             })
@@ -144,7 +144,7 @@ module.exports = {
                 image: result.url ? result.url : initial.image
             }
 
-            const userData = await User.update(data,{where: {id: id}});
+            const userData = await users.update(data,{where: {id: id}});
             res.status(200).json({
                 status:"Success",
                 msg: "Update profile success",

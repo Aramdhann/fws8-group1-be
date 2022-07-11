@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { users } = require("../models");
 const jwt = require("jsonwebtoken");
 const {sequelize} = require("sequelize");
 
@@ -9,7 +9,7 @@ module.exports = {
 
             if(!refreshToken) return res.sendStatus(401);
 
-            const user = await User.findAll({
+            const user = await users.findAll({
                 Where: {
                     refresh_token: refreshToken
                 }

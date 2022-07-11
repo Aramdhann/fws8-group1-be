@@ -16,7 +16,7 @@ const {
     deleteProduct,
     getAllProduct,
     getProductCategory,
-    getProductbyId,
+    getProductDetail,
     getAllSellerProduct
 } = require("../controllers/productController")
 
@@ -33,10 +33,12 @@ function apply(app) {
     app.put("/api/product/:id", verifyToken, upload.single("image"), updateProduct);
     app.delete("/api/product/:id", verifyToken, deleteProduct);
     app.get("/api/product/findall", getAllProduct);
-    app.get("/api/product/findcategory", getProductCategory);
-    app.get("/api/product/findOne", getProductbyId);
+    app.get("/api/product/category/:id", getProductCategory);
+    app.get("/api/product/detail/:id", getProductDetail);
     app.get("/api/product/sellerproduct", verifyToken, getAllSellerProduct);
 
+    // Transaction
+    
 
     return app;
 }
