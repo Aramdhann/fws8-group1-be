@@ -4,6 +4,7 @@ const jwt = require ("jsonwebtoken");
 const bcrypt = require ("bcrypt");
 const cloudinary = require("../../cloudinary/cloudinary");
 const upload = require("../../cloudinary/multer");
+const {kirimEmail} = require('../middleware/emailVerif')
 
 module.exports = {
     async Register(req, res) {
@@ -15,7 +16,6 @@ module.exports = {
                 msg: "Password and confPassword doesn't match"
             })
         }
-
         const salt = await bcrypt.genSalt();
         const hashPassword = await bcrypt.hash(password, salt);
 
@@ -32,6 +32,15 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
+
+        //verif email
+        const templateEmail = {
+            from : 'SecondHand',
+            to : email,
+            subject : 'Email Verification',
+            html : 'Halo! Terimakasih sudah mendaftar di SecondHand! Silahkan klik link dibawah untuk memverifikasi akun anda http://localhost:8000'
+         }
+         kirimEmail (templateEmail)
     },
 
     async Login(req, res) {
