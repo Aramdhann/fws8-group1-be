@@ -4,22 +4,36 @@ const jwt = require ("jsonwebtoken");
 const bcrypt = require ("bcrypt");
 const cloudinary = require("../../cloudinary/cloudinary");
 const upload = require("../../cloudinary/multer");
+const {kirimEmail} = require("../middleware/emailVerif")
 
 module.exports = {
     async Register(req, res) {
-        const { username, email, password, confPassword } = req.body;
-
-        if(password !== confPassword){
-            return res.status(400).json({
-                status: "Failed",
-                msg: "Password and confPassword doesn't match"
-            })
-        }
-
-        const salt = await bcrypt.genSalt();
-        const hashPassword = await bcrypt.hash(password, salt);
-
         try {
+            const { username, email, password, confPassword } = req.body;
+
+            if(password !== confPassword){
+                return res.status(400).json({
+                    status: "Failed",
+                    msg: "Password and confPassword doesn't match"
+                })
+            }
+            const salt = await bcrypt.genSalt();
+            const hashPassword = await bcrypt.hash(password, salt);
+
+            const existUser = await users.findOne({
+                where: {
+                    email: email
+                }
+            })
+
+            if(existUser) {
+                return res.status(401).json({
+                    status: "Fail",
+                    message: "Email is already exists"
+                })
+            }
+
+        
             await users.create({
                 username: username,
                 email: email,
@@ -32,17 +46,32 @@ module.exports = {
         } catch (error) {
             console.log(error);
         }
+
+        // verifemail
+        // const templateEmail = {
+        //     from : 'SecondHand',
+        //     to : email,
+        //     subject : 'Email Verification',
+        //     html : 'Halo! Terimakasih sudah mendaftar di SecondHand! Silahkan klik link dibawah untuk memverifikasi akun anda http://localhost:8000'
+        //  }
+        //  kirimEmail (templateEmail)
     },
 
     async Login(req, res) {
         try {
-            const user = await users.findAll({
+            const user = await users.findOne({
                 where: {
                     email: req.body.email
                 }
             });
+            if(!user) {
+                return res.status(401).json({
+                    msg: "Email doesn't exists"
+                })
+            }
+
             const match = await bcrypt.compare(req.body.password, user[0].password);
-            if(!match) return res.status(400).json({
+            if(!match) return res.status(401).json({
                 msg: "Wrong Password"
             })
 

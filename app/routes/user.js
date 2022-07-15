@@ -9,7 +9,8 @@ const {
     Login, 
     Logout, 
     getUser, 
-    updateUser 
+    updateUser, 
+    emailVerif
 } = require("../controllers/userController");
 
 const {
