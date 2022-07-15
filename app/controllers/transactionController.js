@@ -29,11 +29,7 @@ module.exports = {
 
     async getTransactionDetail(req, res) {
         try {
-            const transaction = await transactions.findOne({
-                where: {
-                    id: req.params.id
-                }
-            });
+            const transaction = await transactions.findByPk(req.params.id);
             if(!transaction) {
                 return res.status(422).json({
                     msg: "Transaction not found"

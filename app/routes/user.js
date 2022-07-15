@@ -60,7 +60,7 @@ function apply(app) {
 
     // Transaction
     app.get("/api/transaction/user-transaction", [verifyToken, checkUserAuth], getUserTransaction)
-//    app.get("api/transaction/transaction-detail/:id", [verifyToken, checkUserAuth], getTransactionDetail);
+    app.get("api/transaction/transaction-detail/:id", verifyToken, checkUserAuth, getTransactionDetail);
     app.post("/api/transaction/add-transaction/:id", verifyToken, addTransaction);
     app.put("/api/transaction/updateBuyer/:id", [verifyToken, checkTransactionBuyerAuth], buyerUpdateTransaction);
     app.put("/api/transaction/seller-reject/:id", [verifyToken, checkTransactionSellerAuth], sellerRejectTransaction);

@@ -64,24 +64,27 @@ module.exports = {
                     email: req.body.email
                 }
             });
+            
+            
             if(!user) {
                 return res.status(401).json({
                     msg: "Email doesn't exists"
                 })
             }
-
-            const match = await bcrypt.compare(req.body.password, user[0].password);
+            
+            
+            const match = bcrypt.compare(user.password, req.body.password);
             if(!match) return res.status(401).json({
                 msg: "Wrong Password"
             })
 
-            const id = user[0].id;
-            const username = user[0].username;
-            const email = user[0].email;
-            const address = user[0].address;
-            const phone = user[0].phone;
-            const city = user[0].city;
-            const image = user[0].image;
+            const id = user.id;
+            const username = user.username;
+            const email = user.email;
+            const address = user.address;
+            const phone = user.phone;
+            const city = user.city;
+            const image = user.image;
             
             const accessToken = jwt.sign({id, username, email, address, phone, city, image}, process.env.ACCESS_TOKEN_SECRET, {
                 expiresIn: '1h'
@@ -104,9 +107,9 @@ module.exports = {
                 accessToken
             })
         } catch (error) {
-            res.status(404).json({
-                status: "Failed",
-                msg: "Email doesn't exist!"
+            res.status(500).json({
+                status: "Fail",
+                msg: error.message
             })
         }
     },
