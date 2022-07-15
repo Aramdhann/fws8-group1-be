@@ -7,7 +7,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json())
 app.use(urlencoded({extended: true}));
 app.use(cookieParser());
