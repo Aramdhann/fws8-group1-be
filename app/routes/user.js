@@ -52,7 +52,7 @@ function apply(app) {
     // Product
     app.post("/api/product/create", verifyToken, upload.single("image"), createProduct);
     app.put("/api/product/:id", verifyToken, upload.single("image"), updateProduct);
-    app.delete("/api/product/:id", verifyToken, deleteProduct);
+    app.delete("/api/product/delete/:id", verifyToken, deleteProduct);
     app.get("/api/product/findall", getAllProduct);
     app.get("/api/product/category/:id", getProductCategory);
     app.get("/api/product/detail/:id", getProductDetail);
@@ -64,7 +64,7 @@ function apply(app) {
     app.post("/api/transaction/add-transaction/:id", verifyToken, addTransaction);
     app.put("/api/transaction/updateBuyer/:id", [verifyToken, checkTransactionBuyerAuth], buyerUpdateTransaction);
     app.put("/api/transaction/seller-reject/:id", [verifyToken, checkTransactionSellerAuth], sellerRejectTransaction);
-    app.put("/api/transaction/seller-accept/:id", [verifyToken, checkTransactionSellerAuth], sellerAcceptTransaction);
+    app.put('/api/transaction/seller-accept/:id', [verifyToken, checkTransactionSellerAuth], sellerAcceptTransaction);
     app.put("/api/transaction/final-transaction/:id", [verifyToken, checkTransactionSellerAuth], finalTransaction)
     
     // Notification
